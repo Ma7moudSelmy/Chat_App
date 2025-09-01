@@ -47,13 +47,13 @@ class LoginPage extends StatelessWidget {
             ),
             SizedBox(height: 20),
 
-            custom_Text_Field(hinttext: "Email"),
+            custom_Text_Field(hinttext: "Email", onChanged: (value) {}),
             SizedBox(height: 15),
 
-            custom_Text_Field(hinttext: "password"),
+            custom_Text_Field(hinttext: "password", onChanged: (value) {}),
             SizedBox(height: 20),
 
-            CutomButton(text: "Login"),
+            CustomButton(text: "Login"),
             SizedBox(height: 25),
 
             Row(
