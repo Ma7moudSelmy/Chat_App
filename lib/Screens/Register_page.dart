@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:chat_app/Screens/login_page.dart';
 import 'package:chat_app/Widgets/constfile.dart';
 import 'package:chat_app/Widgets/custom_Text_Field.dart';
@@ -69,12 +71,20 @@ class Registerpage extends StatelessWidget {
 
             CustomButton(
               onTap: () async {
-                var asth = FirebaseAuth.instance;
-                UserCredential user = await asth.createUserWithEmailAndPassword(
-                  email: email!,
-                  password: password!,
-                );
-                [print(user.user!.displayName)];
+                try {
+                  UserCredential user = await FirebaseAuth.instance
+                      .createUserWithEmailAndPassword(
+                        email: email!,
+                        password: password!,
+                      );
+                } on FirebaseAuthException catch (ex) {
+                  if (ex.code == 'weak-password') {
+                    ShowSnackBar(context, "weak password");
+                  } else if (ex.code == 'email-already-in-use') {
+                    ShowSnackBar(context, "email already exists");
+                  }
+                }
+                ShowSnackBar(context, "success");
               },
 
               text: "Register",
@@ -103,5 +113,11 @@ class Registerpage extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  void ShowSnackBar(BuildContext context, String message) {
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 }
