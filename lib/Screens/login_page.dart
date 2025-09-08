@@ -1,4 +1,8 @@
+import 'dart:ffi';
+import 'dart:math';
+
 import 'package:chat_app/Screens/Register_page.dart';
+import 'package:chat_app/Screens/chat_app.dart';
 import 'package:chat_app/Widgets/constfile.dart';
 import 'package:chat_app/Widgets/custom_Text_Field.dart';
 import 'package:chat_app/Widgets/cutom_Button.dart';
@@ -8,134 +12,115 @@ import 'package:flutter/material.dart';
 import 'package:modal_progress_hud_nsn/modal_progress_hud_nsn.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+  const LoginPage({Key? key}) : super(key: key);
 
+  static String id = 'login page';
   @override
   State<LoginPage> createState() => _LoginPageState();
 }
 
-String? email;
-
-String? password;
-
-bool isloading = false;
-
-GlobalKey<FormState> formkey = GlobalKey();
-
 class _LoginPageState extends State<LoginPage> {
+  bool isLoading = false;
+
+  GlobalKey<FormState> formKey = GlobalKey();
+
+  String? email, password;
   @override
   Widget build(BuildContext context) {
     return ModalProgressHUD(
-      inAsyncCall: isloading,
+      inAsyncCall: isLoading,
       child: Scaffold(
         backgroundColor: KprimaryColor,
-
         body: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8),
           child: Form(
-            key: formkey,
-
+            key: formKey,
             child: ListView(
               children: [
-                SizedBox(height: 100),
-                Image.asset("assets/images/scholar.png", height: 100),
-                SizedBox(height: 20),
-
-                Center(
-                  child: Text(
-                    "Scholar Chat",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 30,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Pacifico',
-                    ),
-                  ),
-                ),
-                SizedBox(height: 50),
-
-                Row(
-                  children: [
-                    Text(
-                      "login",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 30,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20),
-
-                custom_Form_Text_Field(
-                  hinttext: "Email",
-                  onChanged: (data) {
-                    email = data;
-                  },
-                ),
-                SizedBox(height: 15),
-
-                custom_Form_Text_Field(
-                  hinttext: "password",
-                  onChanged: (data) {
-                    password = data;
-                  },
-                ),
-                SizedBox(height: 20),
-
-                CustomButton(
-                  onTap: () async {
-                    if (formkey.currentState!.validate()) {
-                      isloading = true;
-                      setState(() {});
-                      try {
-                        UserCredential user = await FirebaseAuth.instance
-                            .signInWithEmailAndPassword(
-                              email: email!,
-                              password: password!,
-                            );
-                      } on FirebaseAuthException catch (ex) {
-                        if (ex.code == 'user_not found') {
-                          ShowSnackBar(context, "user_not found");
-                        } else if (ex.code == 'Wrong_password') {
-                          ShowSnackBar(context, "Wrong_password");
-                        }
-                      } catch (ex) {
-                        ShowSnackBar(context, "There was an error");
-                      }
-                      isloading = false;
-                      setState(() {});
-
-                      ShowSnackBar(context, "success");
-                    } else {
-                      ShowSnackBar(context, "not valid");
-                    }
-                  },
-
-                  text: "Login",
-                ),
-                SizedBox(height: 25),
-
+                SizedBox(height: 75),
+                Image.asset('assets/images/scholar.png', height: 100),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "dont't have an account?  ",
+                      'Scholar Chat',
+                      style: TextStyle(
+                        fontSize: 32,
+                        color: Colors.white,
+                        fontFamily: 'pacifico',
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 75),
+                Row(
+                  children: [
+                    Text(
+                      'LOGIN',
+                      style: TextStyle(fontSize: 24, color: Colors.white),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+                CustomFormTextField(
+                  onChanged: (data) {
+                    email = data;
+                  },
+                  // hintText: 'Email',
+                ),
+                SizedBox(height: 10),
+                CustomFormTextField(
+                  // obscureText: true,
+                  onChanged: (data) {
+                    password = data;
+                  },
+                  // hintText: 'Password',
+                ),
+                SizedBox(height: 20),
+                CustomButton(
+                  onTap: () async {
+                    if (formKey.currentState!.validate()) {
+                      isLoading = true;
+                      setState(() {});
+                      try {
+                        await loginUser();
+                        Navigator.pushNamed(
+                          context,
+                          ChatApp.id,
+                          arguments: email,
+                        );
+                      } on FirebaseAuthException catch (ex) {
+                        if (ex.code == 'user-not-found') {
+                          ShowSnackBar(context, 'user not found');
+                        } else if (ex.code == 'wrong-password') {
+                          ShowSnackBar(context, 'wrong password');
+                        }
+                      } catch (ex) {
+                        print(ex);
+                        ShowSnackBar(context, 'there was an error');
+                      }
+
+                      isLoading = false;
+                      setState(() {});
+                    } else {}
+                  },
+                  text: 'LOGIN',
+                ),
+                SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'dont\'t have an account?',
                       style: TextStyle(color: Colors.white),
                     ),
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => Registerpage(),
-                          ),
-                        );
+                        Navigator.pushNamed(context, RegisterPage.id);
                       },
                       child: Text(
-                        "Register",
-                        style: TextStyle(color: Colors.white),
+                        '  Register',
+                        style: TextStyle(color: Color(0xffC7EDE6)),
                       ),
                     ),
                   ],
@@ -146,5 +131,10 @@ class _LoginPageState extends State<LoginPage> {
         ),
       ),
     );
+  }
+
+  Future<void> loginUser() async {
+    UserCredential user = await FirebaseAuth.instance
+        .signInWithEmailAndPassword(email: email!, password: password!);
   }
 }
