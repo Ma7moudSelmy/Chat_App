@@ -13,7 +13,7 @@ void main() async {
 }
 
 class ScholarChat extends StatelessWidget {
-  const ScholarChat({Key? key}) : super(key: key);
+  const ScholarChat({super.key});
 
   @override
   Widget build(BuildContext context) {
