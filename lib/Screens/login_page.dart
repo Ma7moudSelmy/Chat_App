@@ -1,6 +1,3 @@
-import 'dart:ffi';
-import 'dart:math';
-
 import 'package:chat_app/Screens/Register_page.dart';
 import 'package:chat_app/Screens/chat_app.dart';
 import 'package:chat_app/Widgets/constfile.dart';

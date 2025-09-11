@@ -1,4 +1,3 @@
-import 'package:chat_app/Screens/chat_app.dart';
 import 'package:chat_app/Screens/login_page.dart';
 import 'package:chat_app/Widgets/constfile.dart';
 import 'package:chat_app/Widgets/custom_Text_Field.dart';
