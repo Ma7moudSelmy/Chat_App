@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:chat_app/Models/messages_Models.dart';
 import 'package:chat_app/Widgets/ChatBuble.dart';
 import 'package:chat_app/Widgets/constfile.dart';
@@ -9,6 +7,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 class ChatApp extends StatelessWidget {
   ChatApp({super.key});
   static String id = "chat_page";
+  final ScrollController _controller = ScrollController();
   TextEditingController controller = TextEditingController();
   CollectionReference messages = FirebaseFirestore.instance.collection(
     KeyMessageCollections,
@@ -18,8 +17,9 @@ class ChatApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var email = ModalRoute.of(context)!.settings.arguments;
     return StreamBuilder<QuerySnapshot>(
-      stream: messages.orderBy(KCreatedAt).snapshots(),
+      stream: messages.orderBy(KCreatedAt, descending: true).snapshots(),
 
       builder: (context, snapshot) {
         if (snapshot.hasData) {
@@ -50,6 +50,8 @@ class ChatApp extends StatelessWidget {
               children: [
                 Expanded(
                   child: ListView.builder(
+                    reverse: true,
+                    controller: _controller,
                     itemCount: messageslist.length,
                     itemBuilder: (context, index) {
                       return ChatBuble(message: messageslist[index]);
@@ -64,8 +66,14 @@ class ChatApp extends StatelessWidget {
                       messages.add({
                         KMessage: data,
                         KCreatedAt: DateTime.now(),
+                        'id': email,
                       });
                       controller.clear();
+                      _controller.animateTo(
+                        duration: Duration(seconds: 1),
+                        curve: Curves.easeOut,
+                        0,
+                      );
                     },
                     decoration: InputDecoration(
                       hintText: 'Type your message here...',
