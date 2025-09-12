@@ -8,19 +8,26 @@ class ChatApp extends StatelessWidget {
   ChatApp({super.key});
   static String id = "chat_page";
   final ScrollController _controller = ScrollController();
-  TextEditingController controller = TextEditingController();
-  CollectionReference messages = FirebaseFirestore.instance.collection(
+  final TextEditingController controller = TextEditingController();
+  final CollectionReference messages = FirebaseFirestore.instance.collection(
     KeyMessageCollections,
   );
 
-  get Messages => null;
+  void sendMessage(email, String data) {
+    messages.add({KMessage: data, KCreatedAt: DateTime.now(), 'id': email});
+    controller.clear();
+    _controller.animateTo(
+      0,
+      duration: const Duration(seconds: 1),
+      curve: Curves.easeOut,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     var email = ModalRoute.of(context)!.settings.arguments;
     return StreamBuilder<QuerySnapshot>(
       stream: messages.orderBy(KCreatedAt, descending: true).snapshots(),
-
       builder: (context, snapshot) {
         if (snapshot.hasData) {
           List<Message> messageslist = [];
@@ -41,7 +48,7 @@ class ChatApp extends StatelessWidget {
                   Image.asset(Klogo, height: 50),
                   const SizedBox(width: 8),
                   const Text("Chat", style: TextStyle(color: Colors.white)),
-                  SizedBox(height: 25),
+                  const SizedBox(height: 25),
                 ],
               ),
               centerTitle: true,
@@ -65,21 +72,20 @@ class ChatApp extends StatelessWidget {
                   child: TextField(
                     controller: controller,
                     onSubmitted: (data) {
-                      messages.add({
-                        KMessage: data,
-                        KCreatedAt: DateTime.now(),
-                        'id': email,
-                      });
-                      controller.clear();
-                      _controller.animateTo(
-                        duration: Duration(seconds: 1),
-                        curve: Curves.easeOut,
-                        0,
-                      );
+                      if (data.isNotEmpty) {
+                        sendMessage(email, data);
+                      }
                     },
                     decoration: InputDecoration(
                       hintText: 'Type your message here...',
-                      suffixIcon: Icon(Icons.send, color: KprimaryColor),
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.send, color: KprimaryColor),
+                        onPressed: () {
+                          if (controller.text.isNotEmpty) {
+                            sendMessage(email, controller.text);
+                          }
+                        },
+                      ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(16),
                         borderSide: BorderSide(color: KprimaryColor),
@@ -97,7 +103,7 @@ class ChatApp extends StatelessWidget {
             ),
           );
         } else {
-          return Center(child: Text("Loading..."));
+          return const Center(child: Text("Loading..."));
         }
       },
     );
