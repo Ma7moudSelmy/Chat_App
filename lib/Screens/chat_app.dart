@@ -54,7 +54,9 @@ class ChatApp extends StatelessWidget {
                     controller: _controller,
                     itemCount: messageslist.length,
                     itemBuilder: (context, index) {
-                      return ChatBuble(message: messageslist[index]);
+                      return messageslist[index].id == email
+                          ? ChatBuble(message: messageslist[index])
+                          : ChatBubleforfrined(message: messageslist[index]);
                     },
                   ),
                 ),

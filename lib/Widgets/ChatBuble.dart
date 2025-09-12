@@ -8,7 +8,7 @@ class ChatBuble extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Align(
-      alignment: Alignment.centerLeft,
+      alignment: Alignment.centerRight,
 
       child: Container(
         margin: const EdgeInsets.all(8),
@@ -17,7 +17,7 @@ class ChatBuble extends StatelessWidget {
           color: KprimaryColor,
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(32),
-            bottomRight: Radius.circular(32),
+            bottomLeft: Radius.circular(32),
             topRight: Radius.circular(32),
           ),
         ),
@@ -39,7 +39,7 @@ class ChatBubleforfrined extends StatelessWidget {
         margin: const EdgeInsets.all(8),
         padding: EdgeInsets.only(left: 16, top: 32, bottom: 32, right: 16),
         decoration: BoxDecoration(
-          color: Colors.orange,
+          color: Color(0xff006D84),
           borderRadius: BorderRadius.only(
             topLeft: Radius.circular(32),
             bottomRight: Radius.circular(32),
